@@ -1,7 +1,8 @@
 use cosmwasm_std::{
-    to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult,
-    entry_point, Order,
+    to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult,
+    entry_point, Order, StdError,
 };
+use cw_storage_plus::Bound;
 
 use crate::error::ContractError;
 use crate::msg::{
@@ -10,7 +11,6 @@ use crate::msg::{
 };
 use crate::state::{Config, Transfer, TransferStatus, CONFIG, TRANSFERS};
 
-// Kontrat başlatma
 #[entry_point]
 pub fn instantiate(
     deps: DepsMut,
@@ -30,7 +30,6 @@ pub fn instantiate(
         .add_attribute("enabled", msg.enabled.to_string()))
 }
 
-// Execute fonksiyonları
 #[entry_point]
 pub fn execute(
     deps: DepsMut,
@@ -128,16 +127,15 @@ pub fn execute_toggle_bridge(
         .add_attribute("enabled", enabled.to_string()))
 }
 
-// Query fonksiyonları
 #[entry_point]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
-        QueryMsg::GetConfig {} => to_binary(&query_config(deps)?),
+        QueryMsg::GetConfig {} => to_json_binary(&query_config(deps)?),
         QueryMsg::GetTransfer { transfer_id } => {
-            to_binary(&query_transfer(deps, transfer_id)?)
+            to_json_binary(&query_transfer(deps, transfer_id)?)
         }
         QueryMsg::ListTransfers { start_after, limit } => {
-            to_binary(&query_list_transfers(deps, start_after, limit)?)
+            to_json_binary(&query_list_transfers(deps, start_after, limit)?)
         }
     }
 }
@@ -168,15 +166,15 @@ fn query_list_transfers(
     limit: Option<u32>,
 ) -> StdResult<TransfersResponse> {
     let limit = limit.unwrap_or(30) as usize;
-    let start = start_after.map(|s| s.as_bytes());
+    let start = start_after.as_deref().map(Bound::exclusive);
 
     let transfers: StdResult<Vec<TransferInfo>> = TRANSFERS
         .range(deps.storage, start, None, Order::Ascending)
         .take(limit)
         .map(|item| {
-            let (id, transfer) = item?;
+            let (key, transfer) = item?;
             Ok(TransferInfo {
-                id: String::from_utf8(id)?,
+                id: String::from_utf8(key.into())?,
                 from: transfer.from.to_string(),
                 to: transfer.to,
                 amount: transfer.amount,
@@ -190,3 +188,4 @@ fn query_list_transfers(
         transfers: transfers?,
     })
 }
+  
