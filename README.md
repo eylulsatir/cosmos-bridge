@@ -1,34 +1,34 @@
 # Cosmos Cross-Chain Bridge
 
-Bu proje, Cosmos ekosistemi için basit bir cross-chain köprü kontratıdır. Kontrat, zincirler arası token transferini yönetir.
+This project is a simple cross-chain bridge contract for the Cosmos ecosystem. The contract manages token transfers between chains.
 
-## Özellikler
+## Features
 
-- Token transferi başlatma ve tamamlama
-- Transfer durumu takibi
-- Köprü aktivasyon/deaktivasyon
-- Transfer listeleme ve sorgulama
+- Initiate and complete token transfers
+- Transfer status tracking
+- Bridge activation/deactivation
+- Transfer listing and querying
 
-## Kurulum
+## Installation
 
-1. Rust ve Cargo'yu yükleyin
-2. Repository'yi klonlayın
-3. Bağımlılıkları yükleyin:
+1. Install Rust and Cargo
+2. Clone the repository
+3. Install dependencies:
 ```cargo build```
 
-## Test
+## Testing
 
-Testleri çalıştırmak için:
+To run tests:
 ```cargo test```
 
-## Kullanım
+## Usage
 
-1. Kontratı deploy edin
-2. Transfer başlatmak için:
-   - InitiateTransfer mesajını kullanın
-3. Transferi tamamlamak için:
-   - CompleteTransfer mesajını kullanın
+1. Deploy the contract
+2. To initiate a transfer:
+  - Use InitiateTransfer message
+3. To complete a transfer:
+  - Use CompleteTransfer message
 
-## Lisans
+## License
 
 MIT
